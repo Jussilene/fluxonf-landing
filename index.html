@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FluxoNF — Captura e Organização de NFS-e</title>
+  <meta name="description" content="FluxoNF: capture e organize NFS-e emitidas, recebidas e canceladas com histórico, rastreabilidade e acesso seguro. Oferta de lançamento: R$149,90 por R$49,90 para os 50 primeiros." />
+
+  <!-- ✅ FAVICON (arquivos na MESMA pasta do landing.html) -->
+  <link rel="icon" href="favicon.ico?v=6">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png?v=6">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=6">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=6">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=6">
+  <meta name="theme-color" content="#0F1218">
+
+  <!-- ✅ HOTMART CHECKOUT WIDGET (Lightbox) -->
+  <script type="text/javascript">
+    function importHotmart(){
+      var imported = document.createElement('script');
+      imported.src = 'https://static.hotmart.com/checkout/widget.min.js';
+      document.head.appendChild(imported);
+
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'https://static.hotmart.com/css/hotmart-fb.min.css';
+      document.head.appendChild(link);
+    }
+    importHotmart();
+  </script>
+
+  <style>
+    :root{
+      --bg:#0F1218;
+      --bg2:#121826;
+      --surface:#141B2A;
+
+      --text:#EAF0FF;
+      --muted:#A9B6D3;
+
+      --blueDeep:#7FA6FF;
+      --blue2:#3B82F6;
+
+      --gold:#D6B25E;
+
+      --green:#22C55E;
+
+      --line:rgba(255,255,255,.10);
+
+      --shadow:0 18px 55px rgba(0,0,0,.45);
+      --shadow2:0 10px 28px rgba(0,0,0,.35);
+
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 12% 2%, rgba(59,130,246,.16), transparent 60%),
+        radial-gradient(900px 520px at 88% 8%, rgba(214,178,94,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+
+    a{color:inherit}
+    .wrap{max-width:980px; margin:0 auto; padding:18px 18px 70px;}
+
+    .topbar{ display:flex; justify-content:center; padding:6px 0 14px; }
+    .badge{
+      font-size:12.5px; color:var(--muted);
+      border:1px solid var(--line);
+      padding:8px 12px; border-radius:999px;
+      background: rgba(20,27,42,.70);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 22px rgba(0,0,0,.35);
+      text-align:center;
+    }
+
+    .panel{
+      background: var(--surface);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px;
+    }
+
+    .hero{ display:flex; flex-direction:column; gap:14px; margin-top:6px; }
+
+    .contentMax{ max-width: 860px; margin: 0 auto; }
+
+    h1{margin:0 0 10px; font-size:42px; line-height:1.05}
+    @media (max-width: 520px){ h1{font-size:34px;} }
+
+    p{margin:0 0 12px; color:var(--muted); font-size:16px; line-height:1.6}
+
+    .highlightBlue{color:var(--blue2); font-weight:1000}
+    .highlightGold{color:var(--gold); font-weight:1000}
+
+    .kpis{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .kpi{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      color:var(--text);
+      background: rgba(59,130,246,.10);
+      font-size:13px; font-weight:900;
+    }
+
+    .ctaRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:16px;
+      align-items:center;
+    }
+    .ctaRow.center{ justify-content:center; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:14px 16px; border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:1000;
+      cursor:pointer;
+      transition: transform .06s ease, filter .12s ease;
+      min-height:46px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    }
+    .btn:hover{filter:brightness(1.06)}
+    .btn:active{transform:translateY(1px)}
+
+    .btnGreen{
+      background: linear-gradient(90deg, var(--green), #66ff9c);
+      border:0; color:#06210f;
+    }
+    .btnGhost{ background: rgba(255,255,255,.08); }
+
+    .mini{font-size:13px; color:var(--muted); margin-top:10px; line-height:1.55}
+
+    .hero .panel:first-child{ padding:34px; }
+    .hero .panel:first-child .contentMax{ max-width: 920px; }
+
+    .hero .panel:first-child h1{
+      margin: 0 0 26px;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+    }
+
+    .hero .panel:first-child p{
+      margin: 0 0 30px;
+      max-width: 840px;
+    }
+
+    .hero .panel:first-child .kpis{ margin-top: 0; gap: 12px; }
+
+    .trustRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      margin-top: 22px;
+    }
+    .trustBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      font-weight: 1000;
+      font-size: 12.5px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+      white-space: nowrap;
+    }
+    .trustBadge small{ color: var(--muted); font-weight: 900; font-size: 12px; }
+
+    .hero .panel:first-child .ctaRow{ margin-top: 28px; }
+    .hero .panel:first-child .mini{ margin-top: 26px; line-height: 1.72; }
+    .hero .panel:first-child .mini br{ display:block; content:""; margin-top:10px; }
+
+    .priceBox{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(520px 420px at 10% 0%, rgba(59,130,246,.14), transparent 60%),
+        radial-gradient(520px 420px at 95% 5%, rgba(214,178,94,.12), transparent 60%),
+        var(--surface);
+      text-align:center;
+    }
+    .ribbon{
+      position:absolute; top:14px; right:14px;
+      background: rgba(214,178,94,.95);
+      color:#1b1404; font-weight:1000;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      font-size:12px;
+    }
+    .subPrice{color:var(--muted); margin:0 0 10px; font-size:14px}
+    .strike{color:rgba(234,240,255,.65); opacity:.85; text-decoration:line-through; font-weight:1000; margin-right:10px}
+
+    .pricePill{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:10px 12px; border-radius:14px;
+      background: rgba(214,178,94,.12);
+      border:1px solid rgba(214,178,94,.28);
+      font-weight:1000;
+      color:rgba(234,240,255,.92);
+      margin:10px auto 10px;
+      flex-wrap:wrap;
+      max-width: 760px;
+    }
+    .pricePill b{color:var(--gold); font-size:18px}
+
+    .ul{
+      margin:12px auto 0;
+      padding:0 0 0 18px;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+      text-align:left;
+      max-width: 560px;
+    }
+
+    .productOnly{
+      margin:16px auto 0;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      box-shadow: var(--shadow2);
+      max-width: 520px;
+    }
+    .productOnly img{
+      width:100%;
+      height:auto;
+      display:block;
+      object-fit:contain;
+      background: rgba(255,255,255,.04);
+    }
+
+    .section{margin-top:22px}
+    .sectionTitle{font-size:18px; margin:0 0 10px; color:var(--text)}
+
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px}
+    @media (max-width: 900px){ .grid2{grid-template-columns:1fr} }
+
+    .card{
+      background: var(--surface);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow: 0 12px 22px rgba(0,0,0,.22);
+    }
+    .card h3{margin:0 0 8px; font-size:16px; color:var(--text)}
+    .card p{margin:0; font-size:14px; color:var(--muted); line-height:1.55}
+    .bullets{margin:10px 0 0; padding:0 0 0 18px; color:var(--muted); line-height:1.65; font-size:14px}
+
+    .carouselWrap{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background: var(--surface);
+      overflow:hidden;
+      position:relative;
+      box-shadow: var(--shadow);
+    }
+    .carouselTop{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(59,130,246,.08);
+      flex-wrap:wrap;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:1000;
+      font-size:12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.22);
+    }
+    .chipDot{
+      width:8px; height:8px; border-radius:999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(34,197,94,.18);
+    }
+
+    .track{
+      display:flex;
+      gap:18px;
+      padding:18px;
+      width:max-content;
+      animation: slide 44s linear infinite;
+    }
+    .carouselWrap:hover .track{animation-play-state:paused}
+
+    .shot{
+      width: 680px;
+      aspect-ratio: 16 / 9;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      flex:0 0 auto;
+      box-shadow: var(--shadow2);
+    }
+    .shot img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+    }
+
+    @keyframes slide{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(-50%); }
+    }
+    @media (max-width: 720px){
+      .shot{width:92vw;}
+    }
+
+    .faq details{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background: rgba(255,255,255,.04);
+      margin-bottom:10px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+    }
+    .faq summary{cursor:pointer; font-weight:1000; color:var(--text)}
+
+    .centerCta{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+    }
+    .centerCta h2{ text-align:center; width:100%; }
+    .centerCta p{
+      text-align:center;
+      width:100%;
+      max-width:760px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    .footer{
+      margin-top:26px; padding-top:18px;
+      border-top:1px solid var(--line);
+      color:var(--muted); font-size:13px; line-height:1.5
+    }
+
+    @media (max-width: 420px){
+      .btn{width:100%;}
+      .badge{white-space:normal}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div class="badge">Acesso seguro • Histórico • Organização por empresa</div>
+    </div>
+
+    <div class="hero">
+
+      <!-- BLOCO 1 -->
+      <div class="panel">
+        <div class="contentMax">
+          <h1>
+            Otimize seu tempo e elimine horas de organização <strong>manual</strong> das NFS-e com
+            <span class="highlightBlue">captura automática</span> e
+            <span class="highlightGold">histórico completo</span> para uma rotina muito mais eficiente.
+          </h1>
+
+          <p>
+            Se você lida com notas <strong>emitidas, recebidas e canceladas</strong>, sabe como isso vira bagunça.
+            O <strong>FluxoNF</strong> centraliza tudo e organiza por período, com <strong>logs</strong> e <strong>rastreabilidade</strong>.
+            Resultado: menos retrabalho e mais previsibilidade no seu financeiro/operacional.
+          </p>
+
+          <div class="kpis">
+            <div class="kpi">✅ Captura automática</div>
+            <div class="kpi">✅ Logs e histórico</div>
+            <div class="kpi">✅ Organização por período</div>
+            <div class="kpi">✅ Acesso por login</div>
+          </div>
+
+          <div class="trustRow">
+            <div class="trustBadge">🔒 Segurança &amp; acesso controlado </div>
+          </div>
+
+          <!-- ✅ CTA com widget Hotmart -->
+          <div class="ctaRow center">
+            <a
+              class="btn btnGreen hotmart-fb hotmart__button-checkout"
+              onclick="return false;"
+              href="https://pay.hotmart.com/M104138061D?checkoutMode=2"
+            >Ativar assinatura</a>
+
+            <a class="btn btnGhost" href="#faq">Dúvidas</a>
+          </div>
+
+          <div class="mini">
+            ⚠️ <strong>Oferta de lançamento:</strong> R$ 49,90/mês válida para os <strong>50 primeiros acessos</strong>.
+            Após isso, o valor passa a ser <strong>R$ 149,90/mês</strong>.
+            <br>
+            ✅ Inclui <strong>1 usuário</strong>. (Usuários adicionais podem virar upgrade futuramente.)
+            <br>
+            ✅ <strong>Garantia Hotmart:</strong> 7 dias para solicitar reembolso conforme regras da plataforma.
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCO 2 (preço) -->
+      <div class="panel priceBox">
+        <div class="ribbon">OFERTA</div>
+
+        <div class="contentMax">
+          <h2 style="font-size:20px;margin:0 0 6px;color:var(--blueDeep);">Assinatura Mensal </h2>
+
+          <p class="subPrice">
+            De <span class="strike">R$ 149,90</span>
+            <span style="color:#B87300; font-weight:1000;">por R$ 49,90/mês</span>
+          </p>
+
+          <div class="pricePill">
+            <span>Você garante o preço promocional por</span>
+            <b>R$ 49,90/mês</b>
+            <span>(50 primeiros)</span>
+          </div>
+
+          <ul class="ul">
+            <li>Captura de NFS-e: <strong>emitidas, recebidas e canceladas</strong></li>
+            <li>Histórico e auditoria (logs)</li>
+            <li>Organização por período</li>
+            <li>Acesso seguro por login</li>
+          </ul>
+
+          <!-- ✅ CTA com widget Hotmart -->
+          <div class="ctaRow center" style="margin-top:14px;">
+            <a
+              class="btn btnGreen hotmart-fb hotmart__button-checkout"
+              onclick="return false;"
+              href="https://pay.hotmart.com/M104138061D?checkoutMode=2"
+            >Ativar assinatura</a>
+          </div>
+
+          <div class="productOnly" title="Produto FluxoNF">
+            <img data-asset="produto.png" alt="Produto FluxoNF" loading="lazy" />
+          </div>
+
+          <div class="mini">
+            *Acesso e orientações pelo ambiente da Hotmart (área de membros).
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pra quem é / Não é -->
+    <div class="section">
+      <h2 class="sectionTitle">Pra quem é (e pra quem não é)</h2>
+      <div class="grid2">
+        <div class="card">
+          <h3>✅ Ideal para</h3>
+          <ul class="bullets">
+            <li>Contadores e escritórios que precisam de <strong>agilidade</strong></li>
+            <li>Prestadores de serviço com volume de NFS-e</li>
+            <li>Empresas que querem <strong>organização</strong> e <strong>rastreio</strong></li>
+            <li>Quem quer reduzir falhas manuais e retrabalho</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>❌ Não é pra você se…</h3>
+          <ul class="bullets">
+            <li>Você quer um sistema com <strong>muitos módulos</strong> (estoque/folha/CRM) — aqui é foco total em NFS-e</li>
+            <li>Você precisa de <strong>processos personalizados</strong> e regras específicas por cliente/município</li>
+            <li>Você quase não trabalha com NFS-e e <strong>não precisa de histórico</strong> / rastreio</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Como funciona -->
+    <div class="section">
+      <h2 class="sectionTitle">Como o FluxoNF funciona (na prática)</h2>
+      <div class="grid2">
+        <div class="card">
+          <h3>1) Você escolhe empresa e período</h3>
+          <p>Defina a empresa e o intervalo de datas (ex.: mês atual). O FluxoNF organiza tudo por período.</p>
+        </div>
+        <div class="card">
+          <h3>2) Captura as notas automaticamente</h3>
+          <p>Busca NFS-e <strong>emitidas, recebidas e canceladas</strong> e centraliza tudo em um só lugar.</p>
+        </div>
+        <div class="card">
+          <h3>3) Histórico e rastreabilidade</h3>
+          <p>Cada execução fica registrada com <strong>status</strong>, detalhes e contagem de arquivos (auditoria).</p>
+        </div>
+        <div class="card">
+          <h3>4) Menos retrabalho, mais previsibilidade</h3>
+          <p>Você consulta rápido, confere o que foi capturado e evita “ir no achismo” no operacional.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRINTS / CARROSSEL -->
+    <div class="section" id="prints">
+      <h2 class="sectionTitle">Veja o sistema por dentro</h2>
+      <p class="mini" style="margin:0 0 10px;">Carrossel automático. Pausa ao passar o mouse.</p>
+
+      <div class="carouselWrap">
+        <div class="carouselTop">
+          <div class="chip"><span class="chipDot"></span> Demonstração visual</div>
+          <div class="chip">Login • Captura • Lote • Histórico • Logs</div>
+        </div>
+
+        <div class="track">
+          <div class="shot"><img data-asset="print-login.png"     alt="Tela de Login" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-dashboard.png" alt="Captura" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-historico.png" alt="Histórico" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-lote.png"      alt="Execução em lote" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-config.png"    alt="Configurações" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-logs.png"      alt="Logs" loading="lazy"></div>
+
+          <div class="shot"><img data-asset="print-login.png"     alt="Tela de Login" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-dashboard.png" alt="Captura" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-historico.png" alt="Histórico" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-lote.png"      alt="Execução em lote" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-config.png"    alt="Configurações" loading="lazy"></div>
+          <div class="shot"><img data-asset="print-logs.png"      alt="Logs" loading="lazy"></div>
+        </div>
+      </div>
+
+      <div class="mini">
+        ✅ Se ainda não aparecer: confirme se os arquivos são <strong>.png</strong> (não pasta) e se o nome está idêntico (hífen e minúsculas).
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section faq" id="faq">
+      <h2 class="sectionTitle">Dúvidas frequentes</h2>
+
+      <details>
+        <summary>O FluxoNF faz o quê exatamente?</summary>
+        <p style="margin-top:10px;color:var(--muted);">
+          Ele <strong>captura e organiza</strong> NFS-e <strong>emitidas, recebidas e canceladas</strong>, com filtros por período e
+          <strong>histórico (logs)</strong> para rastreabilidade.
+        </p>
+      </details>
+
+      <details>
+        <summary>Como eu compro? E quais são as formas de pagamento?</summary>
+        <p style="margin-top:10px;color:var(--muted);">
+          A compra é feita pela <strong>Hotmart</strong>. As formas de pagamento disponíveis são as que você habilitar na Hotmart
+          (ex.: cartão, Pix, boleto).
+        </p>
+      </details>
+
+      <details>
+        <summary>Como recebo o acesso após pagar?</summary>
+        <p style="margin-top:10px;color:var(--muted);">
+          Após a confirmação do pagamento, o acesso é liberado e você entra com <strong>login e senha</strong>.
+          As instruções ficam disponíveis na <strong>área de membros</strong>.
+        </p>
+      </details>
+
+      <details>
+        <summary>Tem fidelidade? Posso cancelar quando quiser?</summary>
+        <p style="margin-top:10px;color:var(--muted);">
+          <strong>Sem fidelidade.</strong> Você pode cancelar a assinatura quando quiser pela plataforma.
+        </p>
+      </details>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="section">
+      <div class="panel centerCta" style="border:1px solid rgba(214,178,94,.25); background:rgba(214,178,94,.06);">
+        <h2 style="margin:0 0 8px;color:var(--text);">Garanta o valor de lançamento</h2>
+
+        <p style="margin:0 0 16px;color:var(--muted);">
+          R$ 49,90/mês para os <strong>50 primeiros</strong>. Depois, <strong>R$ 149,90/mês</strong>.
+        </p>
+
+        <div class="ctaRow center" style="margin-top:0;">
+          <a
+            class="btn btnGreen hotmart-fb hotmart__button-checkout"
+            onclick="return false;"
+            href="https://pay.hotmart.com/M104138061D?checkoutMode=2"
+          >Ativar por R$ 49,90</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p style="margin-top:10px;">
+        <strong>LGPD:</strong> O FluxoNF trata dados somente para execução do serviço. Acesso controlado por credenciais e registro de histórico.
+      </p>
+      <p>© <span id="year"></span> FluxoNF — Todos os direitos reservados.</p>
+    </div>
+
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const ASSET_V = "6";
+    const PREFIXES = ["./", "", "./print-historico.png/", "print-historico.png/", "./img/", "img/", "./assets/", "assets/"];
+
+    function withV(path){
+      const hasQ = path.includes("?");
+      return path + (hasQ ? "&" : "?") + "v=" + encodeURIComponent(ASSET_V);
+    }
+
+    function loadAsset(img, filename){
+      let i = 0;
+      const tryNext = () => {
+        if (i >= PREFIXES.length) return;
+        const candidate = PREFIXES[i] + filename;
+        i++;
+        img.src = withV(candidate);
+      };
+      img.addEventListener("error", () => tryNext());
+      tryNext();
+    }
+
+    document.querySelectorAll("img[data-asset]").forEach(img => {
+      const fn = img.getAttribute("data-asset");
+      if (fn) loadAsset(img, fn);
+    });
+  </script>
+</body>
+</html>
