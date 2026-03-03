@@ -11,7 +11,7 @@
     (function () {
       var host = window.location.hostname || "";
       var path = window.location.pathname || "/";
-      if (host.endsWith("github.io") && path === "/") {
+      if (host === "jussilene.github.io" && path === "/") {
         window.location.replace("/fluxonf-landing/");
       }
     })();
@@ -75,17 +75,15 @@
   <script>
     (function () {
       var HOTMART_URL = "https://pay.hotmart.com/M104138061D?checkoutMode=2";
-      var ASSET_BASE = (function () {
-        var host = window.location.hostname || "";
-        var p = window.location.pathname || "/";
-        if (host.endsWith("github.io")) {
-          return window.location.origin + "/fluxonf-landing/assets/";
-        }
-        if (p.indexOf("/fluxonf-landing") === 0) {
-          return window.location.origin + "/fluxonf-landing/assets/";
-        }
-        return "assets/";
-      })();
+      var PATHNAME = window.location.pathname || "/";
+      var BASE_PATH = PATHNAME.indexOf("/fluxonf-landing/") === 0 || PATHNAME === "/fluxonf-landing"
+        ? "/fluxonf-landing/"
+        : "/";
+      var ASSET_BASE = window.location.origin + BASE_PATH + "assets/";
+      var LANDING_URL = window.location.origin + BASE_PATH;
+      var FLUXONF_LOGO_PRIMARY = ASSET_BASE + "logo%202%20fluxonf.png";
+      var FLUXONF_LOGO_FALLBACK = window.location.origin + BASE_PATH + "print-historico.png/logo.png";
+      var HOTMART_LOGO = ASSET_BASE + "hotmart.png";
 
       function normalizeText(value) {
         return (value || "")
@@ -206,7 +204,7 @@
 
           if (img.getAttribute("data-hotmart-patched") === "1") continue;
           img.setAttribute("data-hotmart-patched", "1");
-          img.setAttribute("src", ASSET_BASE + "hotmart.png");
+          img.setAttribute("src", HOTMART_LOGO);
           img.setAttribute("alt", "Hotmart");
           img.style.height = "22px";
           img.style.maxWidth = "92px";
@@ -239,8 +237,19 @@
           var logo = document.createElement("img");
           logo.className = "fluxonf-footer-logo";
           logo.alt = "FluxoNF";
-          logo.src = encodeURI(ASSET_BASE + "logo 2 fluxonf.png");
+          logo.src = FLUXONF_LOGO_PRIMARY;
+          logo.addEventListener("error", function () {
+            if (this.getAttribute("data-fallback") === "1") return;
+            this.setAttribute("data-fallback", "1");
+            this.src = FLUXONF_LOGO_FALLBACK;
+          });
           brandContainer.appendChild(logo);
+
+          if (brandContainer.tagName && brandContainer.tagName.toLowerCase() === "a") {
+            brandContainer.setAttribute("href", LANDING_URL);
+            brandContainer.setAttribute("target", "_self");
+            brandContainer.removeAttribute("rel");
+          }
           return true;
         }
         return false;
