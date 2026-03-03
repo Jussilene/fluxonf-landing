@@ -11,6 +11,17 @@
     (function () {
       var host = window.location.hostname || "";
       var path = window.location.pathname || "/";
+      var query = window.location.search || "";
+      var hash = window.location.hash || "";
+      var isProjectPath = path.indexOf("/fluxonf-landing/") === 0 || path === "/fluxonf-landing";
+      window.__fluxonfOriginalUrl = path + query + hash;
+      window.__fluxonfOriginalPath = path;
+      window.__fluxonfNeedsPagesShim = isProjectPath;
+
+      if (isProjectPath) {
+        history.replaceState(history.state, "", "/");
+      }
+
       if (host === "jussilene.github.io" && path === "/") {
         window.location.replace("/fluxonf-landing/");
       }
@@ -75,7 +86,7 @@
   <script>
     (function () {
       var HOTMART_URL = "https://pay.hotmart.com/M104138061D?checkoutMode=2";
-      var PATHNAME = window.location.pathname || "/";
+      var PATHNAME = window.__fluxonfOriginalPath || window.location.pathname || "/";
       var BASE_PATH = PATHNAME.indexOf("/fluxonf-landing/") === 0 || PATHNAME === "/fluxonf-landing"
         ? "/fluxonf-landing/"
         : "/";
@@ -356,6 +367,14 @@
         document.addEventListener("DOMContentLoaded", setupFooterLogoObserver);
       } else {
         setupFooterLogoObserver();
+      }
+
+      if (window.__fluxonfNeedsPagesShim) {
+        setTimeout(function () {
+          if (window.location.pathname === "/") {
+            history.replaceState(history.state, "", window.__fluxonfOriginalUrl || "/fluxonf-landing/");
+          }
+        }, 120);
       }
     })();
   </script>
