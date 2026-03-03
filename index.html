@@ -82,6 +82,13 @@
   <script>
     (function () {
       var HOTMART_URL = "https://pay.hotmart.com/M104138061D?checkoutMode=2";
+      var ASSET_BASE = (function () {
+        var p = window.location.pathname || "/";
+        if (p.indexOf("/fluxonf-landing") === 0) {
+          return "/fluxonf-landing/assets/";
+        }
+        return "assets/";
+      })();
 
       function normalizeText(value) {
         return (value || "")
@@ -202,7 +209,7 @@
 
           if (img.getAttribute("data-hotmart-patched") === "1") continue;
           img.setAttribute("data-hotmart-patched", "1");
-          img.setAttribute("src", "assets/hotmart.png");
+          img.setAttribute("src", ASSET_BASE + "hotmart.png");
           img.setAttribute("alt", "Hotmart");
           img.style.height = "22px";
           img.style.maxWidth = "92px";
@@ -235,7 +242,7 @@
           var logo = document.createElement("img");
           logo.className = "fluxonf-footer-logo";
           logo.alt = "FluxoNF";
-          logo.src = encodeURI("assets/logo 2 fluxonf.png");
+          logo.src = encodeURI(ASSET_BASE + "logo 2 fluxonf.png");
           brandContainer.appendChild(logo);
           return true;
         }
