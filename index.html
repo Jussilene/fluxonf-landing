@@ -7,6 +7,15 @@
   <link rel="manifest" href="https://fluxo-nf-pro.base44.app/manifest.json">
   <title>FluxoNF</title>
 
+  <script>
+    (function () {
+      var path = window.location.pathname || "/";
+      if (path !== "/" && path.indexOf("/fluxonf-landing") === 0) {
+        window.history.replaceState({}, "", "/");
+      }
+    })();
+  </script>
+
   <script type="module" crossorigin src="https://fluxo-nf-pro.base44.app/assets/index-wOfWuaAz.js"></script>
   <link rel="stylesheet" crossorigin href="https://fluxo-nf-pro.base44.app/assets/index-DIxVQFVP.css">
 
