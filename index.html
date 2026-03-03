@@ -9,17 +9,10 @@
 
   <script>
     (function () {
+      var host = window.location.hostname || "";
       var path = window.location.pathname || "/";
-      var projectPath = "/fluxonf-landing/";
-      if (path !== "/" && path.indexOf(projectPath) === 0) {
-        window.history.replaceState({}, "", "/");
-        window.addEventListener("load", function () {
-          setTimeout(function () {
-            if (window.location.pathname === "/") {
-              window.history.replaceState({}, "", projectPath);
-            }
-          }, 1200);
-        });
+      if (host.endsWith("github.io") && path === "/") {
+        window.location.replace("/fluxonf-landing/");
       }
     })();
   </script>
@@ -83,9 +76,13 @@
     (function () {
       var HOTMART_URL = "https://pay.hotmart.com/M104138061D?checkoutMode=2";
       var ASSET_BASE = (function () {
+        var host = window.location.hostname || "";
         var p = window.location.pathname || "/";
+        if (host.endsWith("github.io")) {
+          return window.location.origin + "/fluxonf-landing/assets/";
+        }
         if (p.indexOf("/fluxonf-landing") === 0) {
-          return "/fluxonf-landing/assets/";
+          return window.location.origin + "/fluxonf-landing/assets/";
         }
         return "assets/";
       })();
