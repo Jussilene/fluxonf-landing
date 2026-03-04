@@ -95,6 +95,7 @@
       var FLUXONF_LOGO_PRIMARY = ASSET_BASE + "logo%202%20fluxonf.png";
       var FLUXONF_LOGO_FALLBACK = window.location.origin + BASE_PATH + "print-historico.png/logo.png";
       var HOTMART_LOGO = ASSET_BASE + "hotmart.png";
+      var FLUXONF_VIDEO_URL = ASSET_BASE + "Automa%C3%A7%C3%A3o_de_Notas_Fiscais_FluxoNF.mp4";
 
       function normalizeText(value) {
         return (value || "")
@@ -176,6 +177,17 @@
           "[id*='base44'][class*='badge'],",
           "[class*='base44-badge'],",
           "[class*='Edit with Base44']{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important;}"
+        ].join("");
+        document.head.appendChild(style);
+      }
+
+      function injectVideoFixStyles() {
+        if (document.getElementById("fluxonf-video-fix-style")) return;
+        var style = document.createElement("style");
+        style.id = "fluxonf-video-fix-style";
+        style.textContent = [
+          "video[data-fluxonf-video='1']{pointer-events:auto !important;position:relative !important;z-index:5 !important;}",
+          "[data-fluxonf-video-wrap='1']{pointer-events:auto !important;position:relative !important;z-index:4 !important;overflow:hidden;}"
         ].join("");
         document.head.appendChild(style);
       }
@@ -313,6 +325,119 @@
         }
       }
 
+      function createVideoElement() {
+        var video = document.createElement("video");
+        video.setAttribute("controls", "controls");
+        video.setAttribute("playsinline", "playsinline");
+        video.setAttribute("preload", "metadata");
+        video.setAttribute("data-fluxonf-video", "1");
+        video.style.width = "100%";
+        video.style.height = "100%";
+        video.style.display = "block";
+        video.style.border = "0";
+        video.style.borderRadius = "inherit";
+        video.style.objectFit = "contain";
+        video.style.background = "#050b1d";
+        video.style.pointerEvents = "auto";
+        video.src = FLUXONF_VIDEO_URL;
+        return video;
+      }
+
+      function createNeutralVideoWrap() {
+        var wrap = document.createElement("div");
+        wrap.setAttribute("data-fluxonf-video-wrap", "1");
+        wrap.style.width = "100%";
+        wrap.style.maxWidth = "100%";
+        wrap.style.aspectRatio = "16 / 9";
+        wrap.style.borderRadius = "16px";
+        wrap.style.overflow = "hidden";
+        wrap.style.background = "#050b1d";
+        wrap.style.position = "relative";
+        wrap.style.zIndex = "4";
+        return wrap;
+      }
+
+      function findPlaceholderVideoCard(root) {
+        if (!root) return null;
+        var nodes = root.querySelectorAll("div,section,article");
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          var txt = normalizeText(node.textContent || "");
+          var hasPlaceholderCopy =
+            txt.indexOf("demonstracao do fluxonf") >= 0 ||
+            txt.indexOf("substitua este bloco pelo seu video") >= 0;
+          if (!hasPlaceholderCopy) continue;
+          if (txt.indexOf("veja o fluxonf em acao") >= 0) continue;
+
+          var rect = node.getBoundingClientRect();
+          if (rect.width < 320 || rect.height < 180) continue;
+          return node;
+        }
+        return null;
+      }
+
+      function patchVideoSection() {
+        var videoSection = findVideoSection();
+        if (!videoSection) return false;
+
+        var existingVideo = videoSection.querySelector("video");
+        if (existingVideo) {
+          if (existingVideo.getAttribute("data-fluxonf-video") === "1") {
+            if (!existingVideo.getAttribute("src")) {
+              existingVideo.src = FLUXONF_VIDEO_URL;
+            }
+            var existingWrap = existingVideo.parentElement;
+            if (existingWrap) existingWrap.setAttribute("data-fluxonf-video-wrap", "1");
+            return true;
+          }
+          existingVideo.setAttribute("data-fluxonf-video", "1");
+          existingVideo.src = FLUXONF_VIDEO_URL;
+          existingVideo.setAttribute("playsinline", "playsinline");
+          existingVideo.setAttribute("preload", "metadata");
+          existingVideo.style.pointerEvents = "auto";
+          var videoWrap = existingVideo.parentElement;
+          if (videoWrap) videoWrap.setAttribute("data-fluxonf-video-wrap", "1");
+          return true;
+        }
+
+        var iframe = videoSection.querySelector("iframe");
+        if (iframe) {
+          var wrapper = iframe.parentElement || videoSection;
+          if (wrapper.querySelector("video[data-fluxonf-video='1']")) return true;
+          var newVideo = createVideoElement();
+          wrapper.setAttribute("data-fluxonf-video-wrap", "1");
+          wrapper.innerHTML = "";
+          wrapper.appendChild(newVideo);
+          return true;
+        }
+
+        var aspectBlock = videoSection.querySelector("[class*='aspect-video'], [class*='aspect_video']");
+        if (aspectBlock && !aspectBlock.querySelector("video[data-fluxonf-video='1']")) {
+          var fallbackVideo = createVideoElement();
+          aspectBlock.setAttribute("data-fluxonf-video-wrap", "1");
+          aspectBlock.innerHTML = "";
+          aspectBlock.appendChild(fallbackVideo);
+          return true;
+        }
+
+        var placeholderCard = findPlaceholderVideoCard(videoSection);
+        if (placeholderCard && !placeholderCard.querySelector("video[data-fluxonf-video='1']")) {
+          var placeholderVideo = createVideoElement();
+          var neutralWrap = createNeutralVideoWrap();
+          neutralWrap.appendChild(placeholderVideo);
+          if (placeholderCard.parentElement) {
+            placeholderCard.parentElement.replaceChild(neutralWrap, placeholderCard);
+          } else {
+            placeholderCard.setAttribute("data-fluxonf-video-wrap", "1");
+            placeholderCard.innerHTML = "";
+            placeholderCard.appendChild(placeholderVideo);
+          }
+          return true;
+        }
+
+        return false;
+      }
+
       document.addEventListener(
         "click",
         function (event) {
@@ -349,15 +474,18 @@
       );
 
       function setupFooterLogoObserver() {
+        injectVideoFixStyles();
         injectHideBase44BadgeStyles();
         removeBase44BadgeNodes();
         patchHotmartLogo();
+        patchVideoSection();
         replaceFooterBrandWithLogo();
         var root = document.getElementById("root");
         if (!root) return;
         var observer = new MutationObserver(function () {
           removeBase44BadgeNodes();
           patchHotmartLogo();
+          patchVideoSection();
           replaceFooterBrandWithLogo();
         });
         observer.observe(root, { childList: true, subtree: true });
