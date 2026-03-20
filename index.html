@@ -95,7 +95,9 @@
       var FLUXONF_LOGO_PRIMARY = ASSET_BASE + "logo%202%20fluxonf.png";
       var FLUXONF_LOGO_FALLBACK = window.location.origin + BASE_PATH + "print-historico.png/logo.png";
       var HOTMART_LOGO = ASSET_BASE + "hotmart.png";
-      var FLUXONF_VIDEO_URL = ASSET_BASE + "Automa%C3%A7%C3%A3o_de_Notas_Fiscais_FluxoNF.mp4";
+      var VIDEO_CACHE_BUSTER = "20260320-1";
+      var FLUXONF_VIDEO_URL = ASSET_BASE + "video-nf.mp4?v=" + VIDEO_CACHE_BUSTER;
+      var FLUXONF_VIDEO_FALLBACK_URL = ASSET_BASE + "Automa%C3%A7%C3%A3o_de_Notas_Fiscais_FluxoNF.mp4?v=" + VIDEO_CACHE_BUSTER;
 
       function normalizeText(value) {
         return (value || "")
@@ -144,6 +146,16 @@
         );
       }
 
+      function patchVideoButtonStyles() {
+        var targets = document.querySelectorAll("button,a,[role='button']");
+        for (var i = 0; i < targets.length; i++) {
+          var target = targets[i];
+          var text = normalizeText(target.textContent);
+          if (!isVideoButton(text)) continue;
+          target.setAttribute("data-fluxonf-video-cta", "1");
+        }
+      }
+
       function isBuyButton(text) {
         return (
           text.indexOf("ativar assinatura") >= 0 ||
@@ -187,7 +199,9 @@
         style.id = "fluxonf-video-fix-style";
         style.textContent = [
           "video[data-fluxonf-video='1']{pointer-events:auto !important;position:relative !important;z-index:5 !important;}",
-          "[data-fluxonf-video-wrap='1']{pointer-events:auto !important;position:relative !important;z-index:4 !important;overflow:hidden;}"
+          "[data-fluxonf-video-wrap='1']{pointer-events:auto !important;position:relative !important;z-index:4 !important;overflow:hidden;}",
+          "[data-fluxonf-video-cta='1']{color:#000 !important;}",
+          "[data-fluxonf-video-cta='1'] *{color:#000 !important;fill:#000 !important;stroke:#000 !important;opacity:1 !important;}"
         ].join("");
         document.head.appendChild(style);
       }
@@ -340,6 +354,13 @@
         video.style.background = "#050b1d";
         video.style.pointerEvents = "auto";
         video.src = FLUXONF_VIDEO_URL;
+        video.addEventListener("error", function handleVideoError() {
+          if (video.src.indexOf("video-nf.mp4") >= 0) {
+            video.src = FLUXONF_VIDEO_FALLBACK_URL;
+            video.load();
+          }
+          video.removeEventListener("error", handleVideoError);
+        });
         return video;
       }
 
@@ -479,6 +500,7 @@
         removeBase44BadgeNodes();
         patchHotmartLogo();
         patchVideoSection();
+        patchVideoButtonStyles();
         replaceFooterBrandWithLogo();
         var root = document.getElementById("root");
         if (!root) return;
@@ -486,6 +508,7 @@
           removeBase44BadgeNodes();
           patchHotmartLogo();
           patchVideoSection();
+          patchVideoButtonStyles();
           replaceFooterBrandWithLogo();
         });
         observer.observe(root, { childList: true, subtree: true });
